@@ -1,1 +1,64 @@
-Hello world!
+<div class="app">
+	<header class="toolbar">
+		<div>
+			<h1>File Manager</h1>
+			<div class="path">
+				<ng-container *ngFor="let crumb of path; let last = last">
+					<button
+						type="button"
+						class="path-link"
+						[disabled]="last"
+						(click)="navigateTo(crumb)"
+					>
+						{{ crumb.name }}
+					</button>
+					<span *ngIf="!last">/</span>
+				</ng-container>
+			</div>
+		</div>
+
+		<div class="actions">
+			<label class="upload">
+				<input type="file" (change)="onUploadChange($event)" [disabled]="uploading" />
+				<span>{{ uploading ? 'Uploading...' : 'Upload file' }}</span>
+			</label>
+
+			<div class="create-folder">
+				<input
+					type="text"
+					placeholder="New folder name"
+					[(ngModel)]="newFolderName"
+				/>
+				<button type="button" (click)="createFolder()">Create folder</button>
+			</div>
+		</div>
+	</header>
+
+	<div class="status" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+	<div class="list">
+		<div class="list-header">
+			<span>Name</span>
+			<span>Type</span>
+			<span>Size</span>
+			<span>Actions</span>
+		</div>
+
+		<div class="list-row" *ngIf="loading">Loading...</div>
+		<div class="list-row" *ngIf="!loading && items.length === 0">This folder is empty.</div>
+
+		<div class="list-row" *ngFor="let item of items">
+			<button type="button" class="item-name" (click)="openItem(item)">
+				{{ item.name }}
+			</button>
+			<span>{{ item.folder ? 'Folder' : 'File' }}</span>
+			<span>{{ item.folder ? '-' : formatSize(item.size) }}</span>
+			<div class="row-actions">
+				<button type="button" (click)="openItem(item)">
+					{{ item.folder ? 'Open' : 'Download' }}
+				</button>
+				<button type="button" class="danger" (click)="deleteItem(item)">Delete</button>
+			</div>
+		</div>
+	</div>
+</div>
